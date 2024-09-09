@@ -15,14 +15,6 @@ import router from "../app/Router.js";
 
 jest.mock("../app/store", () => mockStore);
 
-const setNewBill = () => {
-  return new NewBill({
-    document,
-    onNavigate,
-    store: mockStore,
-    localStorage: window.localStorage,
-  });
-};
 
 beforeAll(() => {
   jest.spyOn(window, 'alert').mockImplementation(() => {});
@@ -271,5 +263,14 @@ const getCommentary = () => screen.getByTestId("commentary");
 const getFile = (fileName, fileType) => {
   return new File(["img"], fileName, {
     type: [fileType],
+  });
+};
+
+const setNewBill = () => {
+  return new NewBill({
+    document,
+    onNavigate,
+    store: mockStore,
+    localStorage: window.localStorage,
   });
 };

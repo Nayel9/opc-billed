@@ -146,8 +146,8 @@ export default class {
     }
 
     bills.forEach(bill => {
-      /* On enlève l'évènement attaché et on le rattache */
-      $(`#open-bill${bill.id}`).off().on().click((e) => this.handleEditTicket(e, bill, bills))
+      // On enlève l'évènement attaché et on le rattache pour éviter les doublons
+      $(`#open-bill${bill.id}`).off().on().click((e) => this.handleEditTicket(e, bill, bills)) //Bug report dashboard : résolu
     })
 
     return bills

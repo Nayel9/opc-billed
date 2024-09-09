@@ -34,55 +34,72 @@ export default class NewBill {
    * @param {File} file - Le fichier à valider.
    * @returns {boolean} - Retourne true si le fichier est valide, sinon false.
    */
-  fileValidation = file => {
-    const fileExtension = file.name.split('.').pop().toLowerCase();
-    const validExtensions = ['jpg', 'jpeg', 'png'];
-    const fileInput = document.querySelector(`input[data-testid="file"]`);
-    if (!validExtensions.includes(fileExtension)) {
-      alert('Veuillez sélectionner un type de fichier valide : jpg, jpeg ou png');
-      fileInput.value = ''; // Réinitialiser l'entrée de fichier
-      this.document
-          .querySelector(`input[data-testid="file"]`)
-          .classList.add("is-invalid");
-      return false;
-    } else {
-      this.document
+/**
+ * Valide le type de fichier.
+ * @param {File} file - Le fichier à valider.
+ * @returns {boolean} - Retourne true si le fichier est valide, sinon false.
+ */
+fileValidation = file => { //bug report bills résolu
+  const fileExtension = file.name.split('.').pop().toLowerCase();
+  // Liste des extensions de fichiers valides
+  const validExtensions = ['jpg', 'jpeg', 'png'];
+  const fileInput = document.querySelector(`input[data-testid="file"]`);
+  // Vérifie si l'extension du fichier est valide
+  if (!validExtensions.includes(fileExtension)) {
+    // Affiche une alerte si le fichier n'est pas valide
+    alert('Veuillez sélectionner un type de fichier valide : jpg, jpeg ou png');
+    fileInput.value = '';
+    // Ajoute une classe d'erreur à l'input de fichier
+    this.document
         .querySelector(`input[data-testid="file"]`)
-        .classList.remove("is-invalid");
-      return true;
-    }
-  };
+        .classList.add("is-invalid");
+    return false;
+  } else {
+    // Retire la classe d'erreur si le fichier est valide
+    this.document
+      .querySelector(`input[data-testid="file"]`)
+      .classList.remove("is-invalid");
+    return true;
+  }
+};
 
-  /**
-   * Gère l'événement de changement de fichier.
-   * @param {Event} e - L'objet événement.
-   */
-  handleChangeFile = async e => {
-    e.preventDefault();
-    const file = this.document.querySelector(`input[data-testid="file"]`)
-        .files[0];
-    const filePath = e.target.value.split(/\\/g);
-    const fileName = filePath[filePath.length - 1];
-    const formData = new FormData();
-    const email = JSON.parse(localStorage.getItem("user")).email;
-    formData.append("file", file);
-    formData.append("email", email);
-
+/**
+ * Gère l'événement de changement de fichier.
+ * @param {Event} e - L'objet événement.
+ */
+handleChangeFile = async e => {
+  e.preventDefault();
+  // Récupère le fichier sélectionné
+  const file = this.document.querySelector(`input[data-testid="file"]`)
+      .files[0];
+  // Récupère le chemin du fichier et le nom du fichier
+  const filePath = e.target.value.split(/\\/g);
+  const fileName = filePath[filePath.length - 1];
+  // Crée un objet FormData pour le fichier
+  const formData = new FormData();
+  // Récupère l'email de l'utilisateur depuis le localStorage
+  const email = JSON.parse(localStorage.getItem("user")).email;
+  // Ajoute le fichier et l'email à l'objet FormData
+  formData.append("file", file);
+  formData.append("email", email);
+    // Valide le type de fichier avant de continuer
     this.fileValidation(file) &&
-    this.store // Si type de fichier incorrect, on ne l'envoie pas vers le store
-        .bills()
-        .create({
-          data: formData,
-          headers: {
-            noContentType: true,
-          },
-        })
-        .then(({ fileUrl, key }) => {
-          this.billId = key;
-          this.fileUrl = fileUrl;
-          this.fileName = fileName;
-        })
-        .catch(error => console.error(error));
+    // Si le type de fichier est valide, continue à créer une nouvelle facture dans le store
+    this.store
+      .bills()
+      .create({
+        data: formData, // Données du formulaire contenant le fichier et l'email de l'utilisateur
+        headers: {
+          noContentType: true, // Pas d'en-tête de type de contenu pour le téléchargement de fichier
+        },
+      })
+      .then(({ fileUrl, key }) => {
+        // En cas de création réussie, stocke l'URL du fichier et l'ID de la facture
+        this.billId = key;
+        this.fileUrl = fileUrl;
+        this.fileName = fileName;
+      })
+      .catch(error => console.error(error)); // Enregistre toute erreur survenue lors du processus de création
   };
 
   /**
@@ -122,14 +139,17 @@ export default class NewBill {
    * @param {Object} bill - L'objet facture.
    */
   updateBill = bill => {
+    // Vérifie si l'objet store est défini
     if (this.store) {
+      // Met à jour la facture dans le store
       this.store
           .bills()
           .update({ data: JSON.stringify(bill), selector: this.billId })
           .then(() => {
+            // Redirige vers la page des factures après la mise à jour réussie
             this.onNavigate(ROUTES_PATH["Bills"]);
           })
-          .catch(error => console.error(error));
+          .catch(error => console.error(error)); // Enregistre toute erreur survenue lors du processus de mise à jour
     }
   };
 }

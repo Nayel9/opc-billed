@@ -2,7 +2,7 @@
 import { ROUTES_PATH } from '../constants/routes.js'
 export let PREVIOUS_LOCATION = ''
 
-// we use a class so as to test its methods in e2e tests
+
 export default class Login {
   constructor({ document, localStorage, onNavigate, PREVIOUS_LOCATION, store }) {
     this.document = document
@@ -41,8 +41,8 @@ export default class Login {
     e.preventDefault()
     const user = {
       type: "Admin",
-      email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
-      password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
+      email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value, // Bug report login : résolu
+      password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,// Bug report login : résolu
       status: "connected"
     }
     this.localStorage.setItem("user", JSON.stringify(user))
