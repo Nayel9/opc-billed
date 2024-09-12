@@ -1,5 +1,5 @@
-import { ROUTES_PATH } from "../constants/routes.js";
-import Logout from "./Logout.js";
+import { ROUTES_PATH } from '../constants/routes.js'
+import Logout from "./Logout.js"
 
 /**
  * Classe représentant une nouvelle facture.
